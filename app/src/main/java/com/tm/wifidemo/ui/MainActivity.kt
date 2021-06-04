@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mSocketManager: SocketManager
 
+    private val pingIpList: ArrayList<String> = arrayListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -57,10 +59,11 @@ class MainActivity : AppCompatActivity() {
         val scanDeviceTool = ScanDeviceTool()
         scanDeviceTool.setOnScanListener { ipList, devAddress ->
             initViewAfterData(ipList)
-
             findViewById<TextView>(R.id.tv_local).text = "本机ip： $devAddress"
         }
         val ipList = scanDeviceTool.scan()
+        pingIpList.clear()
+        pingIpList.addAll(ipList)
 
         try {
             // 创建socket实例
@@ -111,7 +114,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace();
-                return;
+                return
             }
             Log.e("info", "connect success========================================");
 //            startReader(mSocket);
@@ -213,9 +216,8 @@ class MainActivity : AppCompatActivity() {
             } catch (e: IOException) {
                 e.printStackTrace();
                 Log.e("info", "run: ==============" + "accept error");
-                return;
+                return
             }
-
 
             Log.e("info", "accept success==================")
             sendUpd(mIp, "链接上了！！！！！！！！！！")
@@ -265,10 +267,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_to_activity2) {
-            startActivity(Intent(this, MainActivity2::class.java))
+            startActivity(Intent(this, BroadcastActivity::class.java))
             return true
         } else if (item.itemId == R.id.menu_to_file) {
             startActivityForResult(Intent(this, FileSelectActivity::class.java), 1)
+            return true
+        } else if (item.itemId == R.id.menu_to_TCP) {
+            val intent = Intent(this, DeviceTcpActivity::class.java)
+            if (pingIpList.size > 0) {
+                // 去掉这个ip 这是路由服务器ip，没有必要链接
+                if (pingIpList[0].equals("192.168.0.1")) {
+                    pingIpList.removeAt(0)
+                }
+            }
+            intent.putStringArrayListExtra("ips", pingIpList)
+            startActivity(intent)
             return true
         }
         return super.onOptionsItemSelected(item)

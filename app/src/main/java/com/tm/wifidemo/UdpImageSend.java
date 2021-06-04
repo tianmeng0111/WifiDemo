@@ -9,7 +9,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 
 public class UdpImageSend {
-    private static int port = 8003;
+    private static int port = 4444;
     private DatagramPacket datagramPacket;
     private DatagramSocket datagramSocket;
     byte b[] = new byte[8192];

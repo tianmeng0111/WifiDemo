@@ -6,4 +6,7 @@
     <item android:id="@+id/menu_to_file"
         android:title="to file"
         />
+    <item android:id="@+id/menu_to_TCP"
+        android:title="to tcp"
+        />
 </menu>
